@@ -26,7 +26,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <bits/stdc++.h>
 
+#include <common.h>
+#include <agv.h>
+#include <graphGenerators.h>
+#include <worldGraph.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +41,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define SIZE 5
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,7 +52,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+using namespace std;
+const pair target(0, 1);
+const pair initial(3, 4);
+const float allignDistance = 0.1;
+const float searchAngle = 0.5;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,7 +79,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -98,8 +106,33 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
+  vertexIDMapper mapper(SIZE);
+  GRAPH_TYPE baseGraph;
+  generateDefaultGraph(SIZE, &baseGraph);
+  worldGraph graph(&baseGraph);
+  agv robot(allignDistance);
+
+  graph.setTarget(mapper.getVertexID(target));
+  graph.setPosition(mapper.getVertexID(initial));
+
+  direction path;
+  while ((path = graph.getDirection()) != NO_PATH)
   {
+    float turn;
+    switch (path)
+    {
+    case LEFT:
+      turn = 3.1415 / 2;
+      break;
+    case RIGHT:
+      turn = -3.1415 / 2;
+      break;
+    case BACKWARD:
+      turn = 3.1415;
+      break;
+    }
+    if (path != FORWARD)
+      robot.turnAngleGrab(path, searchAngle);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -137,8 +170,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -166,7 +198,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -175,7 +207,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
