@@ -12,7 +12,7 @@
 //O < O - O > O
 //    v   v
 //O   O   O   O
-void generateDefaultGraph(int size, GRAPH_TYPE *graph);
+void generateDefaultGraph(int size, GRAPH_TYPE &graph);
 
 class vertexIDMapper
 {

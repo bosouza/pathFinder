@@ -7,7 +7,7 @@ private:
 
 public:
     agv(float allignDistance);
-    ~agv();
+    ~agv(){};
     //turnAngle will simply turn the avg the passed angle (in radians).
     void turnAngle(float radians);
     //turnAngleGrap will turn the avg and look for a guide line inside the interval specified by

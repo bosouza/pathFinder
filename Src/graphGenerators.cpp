@@ -5,7 +5,8 @@
 void generateDefaultGraph(int size, GRAPH_TYPE &graph)
 {
     if (size < 2)
-        throw "cannot create default graph with size < 2";
+        //TODO: something to alert
+        return;
     graph.clear();
     vertexIDMapper mapper(size);
     for (int x = 1; x < size - 1; x++)

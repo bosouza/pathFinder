@@ -14,3 +14,8 @@ void worldGraph::setPosition(int position)
 {
     _position = position;
 }
+
+direction worldGraph::getDirection()
+{
+    return NO_PATH;
+}

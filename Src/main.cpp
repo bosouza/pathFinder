@@ -53,8 +53,8 @@
 
 /* USER CODE BEGIN PV */
 using namespace std;
-const pair target(0, 1);
-const pair initial(3, 4);
+const pair<int, int> target(0, 1);
+const pair<int, int> initial(3, 4);
 const float allignDistance = 0.1;
 const float searchAngle = 0.5;
 /* USER CODE END PV */
@@ -108,7 +108,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   vertexIDMapper mapper(SIZE);
   GRAPH_TYPE baseGraph;
-  generateDefaultGraph(SIZE, &baseGraph);
+  generateDefaultGraph(SIZE, baseGraph);
   worldGraph graph(&baseGraph);
   agv robot(allignDistance);
 

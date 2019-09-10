@@ -23,7 +23,7 @@ private:
 
 public:
     worldGraph(GRAPH_TYPE *graph);
-    ~worldGraph();
+    ~worldGraph() {}
     void setTarget(int targetID);
     void setPosition(int PositionID);
     direction getDirection();
