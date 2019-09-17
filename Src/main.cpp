@@ -59,6 +59,7 @@ const pair<int, int> target(0, 1);
 const pair<int, int> initial(3, 4);
 const float allignDistance = 0.1;
 const float searchAngle = 0.5;
+uint16_t ADC_Data[2] = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,6 +70,11 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+// {
+//   HAL_ADC_Start_IT(&hadc1);
+// }
 
 /* USER CODE END 0 */
 
@@ -115,9 +121,15 @@ int main(void)
   generateDefaultGraph(SIZE, baseGraph);
   worldGraph graph(&baseGraph);
   agv robot(allignDistance);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Data, 2);
 
   graph.setTarget(mapper.getVertexID(target));
   graph.setPosition(mapper.getVertexID(initial));
+
+  while (1)
+  {
+    ;
+  }
 
   direction path;
   while ((path = graph.getDirection()) != NO_PATH)
