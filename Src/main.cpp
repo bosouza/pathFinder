@@ -71,11 +71,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-// void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
-// {
-//   HAL_ADC_Start_IT(&hadc1);
-// }
-
 /* USER CODE END 0 */
 
 /**
@@ -123,8 +118,15 @@ int main(void)
   agv robot(allignDistance);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Data, 2);
 
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_Base_Start(&htim3);
+
   graph.setTarget(mapper.getVertexID(target));
   graph.setPosition(mapper.getVertexID(initial));
+
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 500);
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 900);
 
   while (1)
   {
