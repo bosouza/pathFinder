@@ -5,12 +5,12 @@
 #include "usart.h"
 #include "gpio.h"
 
-void SystemClock_Config(void);
 void TurnAngle(float radians);
 AVG_StatusTypedef TurnAngleGrab(float radians, float searchAngle);
 AVG_StatusTypedef TurnLines(int lines);
 AVG_StatusTypedef FollowLine();
 void HardForward(float distance);
+void SystemClock_Config(void);
 
 uint16_t ADC_Data[2] = {0};
 
@@ -23,6 +23,7 @@ void InitAVG(void)
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
+  MX_TIM11_Init();
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Data, 2);
 
