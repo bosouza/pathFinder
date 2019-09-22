@@ -54,20 +54,29 @@ void InitAVG(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   Stop();
   HAL_TIM_Base_Start(&htim3);
+
+  HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(FOLLOWING_LINE_GPIO_Port, FOLLOWING_LINE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(ERROR_GPIO_Port, ERROR_Pin, GPIO_PIN_RESET);
 }
 
 void TurnAngle(float radians)
 {
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_SET);
   if (radians > 0)
     TurnLeft(1000);
   else
     TurnRight(1000);
   BusyWait(1000 * radians / RADIANS_PER_SECOND);
   Stop();
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_RESET);
 }
 
 AVG_StatusTypedef FollowLine(float allignDistance)
 {
+  HAL_GPIO_WritePin(FOLLOWING_LINE_GPIO_Port, FOLLOWING_LINE_Pin, GPIO_PIN_SET);
   uint32_t leftSensor = ADC_Data[0];
   uint32_t rightSensor = ADC_Data[1];
   for (int i = 0; i < SENSOR_MEAN_NUM; i++)
@@ -78,22 +87,44 @@ AVG_StatusTypedef FollowLine(float allignDistance)
   while (leftSensor < LEFT_THRESHOLD || rightSensor < RIGHT_THRESHOLD)
   {
     if (leftSensor >= LEFT_THRESHOLD)
+    {
+      HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_SET);
       LeftStop();
+    }
     else
+    {
+      HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_RESET);
       LeftForwards(1000);
+    }
     if (rightSensor >= RIGHT_THRESHOLD)
+    {
+      HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_SET);
       RightStop();
+    }
     else
+    {
+      HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_RESET);
       RightForwards(1000);
+    }
     BusyWait(5);
     leftSensor = (SENSOR_MEAN_NUM - 1) * leftSensor + ADC_Data[0];
     rightSensor = (SENSOR_MEAN_NUM - 1) * rightSensor + ADC_Data[1];
   }
+  HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_RESET);
   RightForwards(1000);
   LeftForwards(1000);
   BusyWait(1000 * allignDistance / METERS_PER_SECOND);
   Stop();
+  HAL_GPIO_WritePin(FOLLOWING_LINE_GPIO_Port, FOLLOWING_LINE_Pin, GPIO_PIN_RESET);
   return AGV_OK;
+}
+
+void SignalError()
+{
+  HAL_GPIO_WritePin(ERROR_GPIO_Port, ERROR_Pin, GPIO_PIN_SET);
+  while (1)
+    ;
 }
 
 void TurnRight(uint32_t duty_cycle)

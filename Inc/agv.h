@@ -36,6 +36,8 @@ extern "C"
 #define SWO_GPIO_Port GPIOB
 #define TURNING_Pin GPIO_PIN_8
 #define TURNING_GPIO_Port GPIOB
+#define ERROR_Pin GPIO_PIN_9
+#define ERROR_GPIO_Port GPIOB
 
 #ifdef __cplusplus
 }
@@ -69,5 +71,6 @@ AVG_StatusTypedef FollowLine(float alignDistance);
 //hardForward will attempt to advance the specified distance. If the path is block it'll wait until
 //it's unblocked to be able to clear the specified distance
 void HardForward(float distance);
+void SignalError();
 
 #endif
