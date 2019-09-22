@@ -22,7 +22,8 @@ int main(void)
   graph.setPosition(mapper.getVertexID(initial));
 
   InitAVG();
-
+  TurnAngle(20);
+  FollowLine(0.1);
   while (1)
   {
     ;

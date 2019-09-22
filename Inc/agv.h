@@ -49,7 +49,9 @@ typedef enum
 
 //initAVG initializes all peripherals and low level stuff
 void InitAVG(void);
-//turnAngle will simply turn the avg the specified angle (in radians).
+//turnAngle will simply turn the avg the specified angle (in radians). A positive angle means a left
+//turn (counter-clockwise, looking from above), while a negative angle means a right turn (clockwise,
+//looking from above).
 void TurnAngle(float radians);
 //turnAngleGrap will turn the avg and look for a guide line inside the interval specified by
 //(´radians´ - ´searchAngle´, ´radians´ + ´searchAngle´). Returns false if no guide line was found
@@ -63,7 +65,7 @@ AVG_StatusTypedef TurnLines(int lines);
 //a crossing has been reached. Return false means it was not possible to follow the path to its end,
 //meaning the path is blocked. By default once a crossing is reached the agv will attempt to position
 //itself right above the crossing by advancing the distance specified in `alignDistance`
-AVG_StatusTypedef FollowLine();
+AVG_StatusTypedef FollowLine(float alignDistance);
 //hardForward will attempt to advance the specified distance. If the path is block it'll wait until
 //it's unblocked to be able to clear the specified distance
 void HardForward(float distance);

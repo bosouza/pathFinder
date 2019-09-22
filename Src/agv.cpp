@@ -4,6 +4,19 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+//warning: ugly hardware code hastily put together, don't stare at it for too long
+
+//how many radians does the robot turn in one second (max voltage on both wheels, turning
+//to opposite sides).
+#define RADIANS_PER_SECOND 10
+//how many meters does the robot moves in one second (max voltage on both wheels)
+#define METERS_PER_SECOND 0.5
+//the higher this number is the more amortized the sensor readings are
+#define SENSOR_MEAN_NUM 10
+//threshold for the left if-sensor (compared to the 12-bit adc output)
+#define LEFT_THRESHOLD 900
+//threshold for the right if-sensor (compared to the 12-bit adc output)
+#define RIGHT_THRESHOLD 900
 
 void TurnAngle(float radians);
 AVG_StatusTypedef TurnAngleGrab(float radians, float searchAngle);
@@ -11,6 +24,16 @@ AVG_StatusTypedef TurnLines(int lines);
 AVG_StatusTypedef FollowLine();
 void HardForward(float distance);
 void SystemClock_Config(void);
+void BusyWait(uint32_t ms);
+void TurnRight(uint32_t duty_cycle);
+void TurnLeft(uint32_t duty_cycle);
+void Stop();
+void LeftForwards(uint32_t duty_cycle);
+void LeftBackwards(uint32_t duty_cycle);
+void LeftStop();
+void RightForwards(uint32_t duty_cycle);
+void RightBackwards(uint32_t duty_cycle);
+void RightStop();
 
 uint16_t ADC_Data[2] = {0};
 
@@ -29,14 +52,123 @@ void InitAVG(void)
 
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  Stop();
   HAL_TIM_Base_Start(&htim3);
-
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 500);
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 900);
 }
 
 void TurnAngle(float radians)
 {
+  if (radians > 0)
+    TurnLeft(1000);
+  else
+    TurnRight(1000);
+  BusyWait(1000 * radians / RADIANS_PER_SECOND);
+  Stop();
+}
+
+AVG_StatusTypedef FollowLine(float allignDistance)
+{
+  uint32_t leftSensor = ADC_Data[0];
+  uint32_t rightSensor = ADC_Data[1];
+  for (int i = 0; i < SENSOR_MEAN_NUM; i++)
+  {
+    leftSensor = ((SENSOR_MEAN_NUM - 1) * leftSensor + ADC_Data[0]) / SENSOR_MEAN_NUM;
+    rightSensor = ((SENSOR_MEAN_NUM - 1) * rightSensor + ADC_Data[1]) / SENSOR_MEAN_NUM;
+  }
+  while (leftSensor < LEFT_THRESHOLD || rightSensor < RIGHT_THRESHOLD)
+  {
+    if (leftSensor >= LEFT_THRESHOLD)
+      LeftStop();
+    else
+      LeftForwards(1000);
+    if (rightSensor >= RIGHT_THRESHOLD)
+      RightStop();
+    else
+      RightForwards(1000);
+    BusyWait(5);
+    leftSensor = (SENSOR_MEAN_NUM - 1) * leftSensor + ADC_Data[0];
+    rightSensor = (SENSOR_MEAN_NUM - 1) * rightSensor + ADC_Data[1];
+  }
+  RightForwards(1000);
+  LeftForwards(1000);
+  BusyWait(1000 * allignDistance / METERS_PER_SECOND);
+  Stop();
+  return AVG_OK;
+}
+
+void TurnRight(uint32_t duty_cycle)
+{
+  LeftForwards(duty_cycle);
+  RightBackwards(duty_cycle);
+}
+
+void TurnLeft(uint32_t duty_cycle)
+{
+  RightBackwards(duty_cycle);
+  LeftBackwards(duty_cycle);
+}
+
+void Stop()
+{
+  RightStop();
+  LeftStop();
+}
+
+void LeftForwards(uint32_t duty_cycle)
+{
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, duty_cycle);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
+}
+
+void LeftStop()
+{
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
+}
+
+void LeftBackwards(uint32_t duty_cycle)
+{
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, duty_cycle);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
+}
+
+void RightForwards(uint32_t duty_cycle)
+{
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, duty_cycle);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
+}
+
+void RightStop()
+{
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+}
+
+void RightBackwards(uint32_t duty_cycle)
+{
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, duty_cycle);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
+}
+
+uint32_t waitMs = 0;
+void BusyWait(uint32_t ms)
+{
+  waitMs = ms;
+  HAL_TIM_Base_Start_IT(&htim11);
+  while (waitMs > 0)
+    ;
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM11)
+  {
+    waitMs--;
+    if (waitMs > 0)
+    {
+      HAL_TIM_Base_Start_IT(&htim11);
+    }
+  }
 }
 
 void SystemClock_Config(void)
