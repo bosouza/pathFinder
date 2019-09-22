@@ -43,8 +43,8 @@ extern "C"
 
 typedef enum
 {
-    AVG_OK = 0,
-    AVG_ERROR,
+    AGV_OK = 0,
+    AGV_ERROR,
 } AVG_StatusTypedef;
 
 //initAVG initializes all peripherals and low level stuff

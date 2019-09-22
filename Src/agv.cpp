@@ -93,7 +93,7 @@ AVG_StatusTypedef FollowLine(float allignDistance)
   LeftForwards(1000);
   BusyWait(1000 * allignDistance / METERS_PER_SECOND);
   Stop();
-  return AVG_OK;
+  return AGV_OK;
 }
 
 void TurnRight(uint32_t duty_cycle)
