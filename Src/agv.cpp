@@ -14,9 +14,9 @@
 //the higher this number is the more amortized the sensor readings are
 #define SENSOR_MEAN_NUM 10
 //threshold for the left if-sensor (compared to the 12-bit adc output)
-#define LEFT_THRESHOLD 900
+#define LEFT_THRESHOLD 2500
 //threshold for the right if-sensor (compared to the 12-bit adc output)
-#define RIGHT_THRESHOLD 900
+#define RIGHT_THRESHOLD 2500
 
 void TurnAngle(float radians);
 AVG_StatusTypedef TurnAngleGrab(float radians, float searchAngle);
@@ -107,8 +107,8 @@ AVG_StatusTypedef FollowLine(float allignDistance)
       RightForwards(1000);
     }
     BusyWait(5);
-    leftSensor = (SENSOR_MEAN_NUM - 1) * leftSensor + ADC_Data[0];
-    rightSensor = (SENSOR_MEAN_NUM - 1) * rightSensor + ADC_Data[1];
+    leftSensor = ((SENSOR_MEAN_NUM - 1) * leftSensor + ADC_Data[0]) / SENSOR_MEAN_NUM;
+    rightSensor = ((SENSOR_MEAN_NUM - 1) * rightSensor + ADC_Data[1]) / SENSOR_MEAN_NUM;
   }
   HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_RESET);
@@ -148,37 +148,43 @@ void Stop()
 void LeftForwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
 }
 
 void LeftStop()
 {
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 1000);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
 }
 
 void LeftBackwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
 }
 
 void RightForwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_RESET);
 }
 
 void RightStop()
 {
-  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 1000);
   HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_RESET);
 }
 
 void RightBackwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_SET);
 }
 
 uint32_t waitMs = 0;
