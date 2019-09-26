@@ -18,26 +18,26 @@ extern "C"
 #define USART_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
-#define H_BRIDGE_IN_2_Pin GPIO_PIN_10
+#define H_BRIDGE_IN_2_Pin GPIO_PIN_1
 #define H_BRIDGE_IN_2_GPIO_Port GPIOB
+#define H_BRIDGE_IN_1_Pin GPIO_PIN_2
+#define H_BRIDGE_IN_1_GPIO_Port GPIOB
+#define H_BRIDGE_IN_4_Pin GPIO_PIN_14
+#define H_BRIDGE_IN_4_GPIO_Port GPIOB
+#define H_BRIDGE_IN_3_Pin GPIO_PIN_15
+#define H_BRIDGE_IN_3_GPIO_Port GPIOB
 #define LINE_LEFT_DETECTED_Pin GPIO_PIN_6
 #define LINE_LEFT_DETECTED_GPIO_Port GPIOC
 #define LINE_RIGHT_DETECTED_Pin GPIO_PIN_8
 #define LINE_RIGHT_DETECTED_GPIO_Port GPIOC
 #define FOLLOWING_LINE_Pin GPIO_PIN_9
 #define FOLLOWING_LINE_GPIO_Port GPIOC
-#define H_BRIDGE_IN_1_Pin GPIO_PIN_8
-#define H_BRIDGE_IN_1_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
-#define H_BRIDGE_IN_3_Pin GPIO_PIN_4
-#define H_BRIDGE_IN_3_GPIO_Port GPIOB
-#define H_BRIDGE_IN_4_Pin GPIO_PIN_5
-#define H_BRIDGE_IN_4_GPIO_Port GPIOB
 #define TURNING_Pin GPIO_PIN_8
 #define TURNING_GPIO_Port GPIOB
 #define ERROR_Pin GPIO_PIN_9
@@ -76,5 +76,14 @@ AVG_StatusTypedef FollowLine(float alignDistance);
 //it's unblocked to be able to clear the specified distance
 void HardForward(float distance);
 void SignalError();
+
+void TurnLeft(uint32_t);
+void TurnRight(uint32_t);
+
+void LeftFowrwards(uint32_t);
+void LeftBackwards(uint32_t);
+
+void RightFowrwards(uint32_t);
+void RightBackwards(uint32_t);
 
 #endif
