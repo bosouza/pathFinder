@@ -138,7 +138,7 @@ void TurnRight(uint32_t duty_cycle)
 
 void TurnLeft(uint32_t duty_cycle)
 {
-  RightFowrwards(duty_cycle);
+  RightForwards(duty_cycle);
   LeftBackwards(duty_cycle);
 }
 
