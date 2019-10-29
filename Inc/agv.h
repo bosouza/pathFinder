@@ -6,18 +6,22 @@ extern "C"
 {
 #endif
 
-#include "stm32f4xx_hal.h"
+#include "stm32f3xx_hal.h"
 
     void Error_Handler(void);
 
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
+#define RCC_OSC32_OUT_Pin GPIO_PIN_15
+#define RCC_OSC32_OUT_GPIO_Port GPIOC
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
+#define ERROR_Pin GPIO_PIN_5
+#define ERROR_GPIO_Port GPIOC
 #define H_BRIDGE_IN_2_Pin GPIO_PIN_1
 #define H_BRIDGE_IN_2_GPIO_Port GPIOB
 #define H_BRIDGE_IN_1_Pin GPIO_PIN_2
@@ -40,8 +44,6 @@ extern "C"
 #define SWO_GPIO_Port GPIOB
 #define TURNING_Pin GPIO_PIN_8
 #define TURNING_GPIO_Port GPIOB
-#define ERROR_Pin GPIO_PIN_9
-#define ERROR_GPIO_Port GPIOB
 
 #ifdef __cplusplus
 }

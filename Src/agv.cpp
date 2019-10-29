@@ -24,7 +24,7 @@
 void TurnAngle(float radians);
 AVG_StatusTypedef TurnAngleGrab(float radians, float searchAngle);
 AVG_StatusTypedef TurnLines(int lines);
-AVG_StatusTypedef FollowLine();
+AVG_StatusTypedef FollowLine(float allignDistance);
 void HardForward(float distance);
 void SystemClock_Config(void);
 void BusyWait(uint32_t ms);
@@ -46,10 +46,10 @@ void InitAVG(void)
   SystemClock_Config();
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
-  MX_TIM11_Init();
+  MX_TIM6_Init();
+  MX_USART2_UART_Init();
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Data, 2);
 
@@ -194,19 +194,19 @@ uint32_t waitMs = 0;
 void BusyWait(uint32_t ms)
 {
   waitMs = ms;
-  HAL_TIM_Base_Start_IT(&htim11);
+  HAL_TIM_Base_Start_IT(&htim6);
   while (waitMs > 0)
     ;
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if (htim->Instance == TIM11)
+  if (htim->Instance == TIM6)
   {
     waitMs--;
     if (waitMs > 0)
     {
-      HAL_TIM_Base_Start_IT(&htim11);
+      HAL_TIM_Base_Start_IT(&htim6);
     }
   }
 }
@@ -215,11 +215,8 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Configure the main internal regulator output voltage 
-  */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
@@ -227,10 +224,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -244,6 +238,12 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+  PeriphClkInit.Adc12ClockSelection = RCC_ADC12PLLCLK_DIV1;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
   }

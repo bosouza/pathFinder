@@ -1,6 +1,10 @@
 #ifndef WORLD_GRAPH_H_DEFINED
 #define WORLD_GRAPH_H_DEFINED
-#include <bits/stdc++.h>
+#include <utility>
+#include <map>
+#include <iostream>
+#include <queue>
+
 #define ii std::pair<int, int>
 #define GRAPH_TYPE std::map<ii, std::map<orientationTypedef, ii>>
 
