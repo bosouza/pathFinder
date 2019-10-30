@@ -8,7 +8,7 @@
 
 //how many radians does the robot turn in one second (max voltage on both wheels, turning
 //to opposite sides).
-#define RADIANS_PER_SECOND 10
+#define RADIANS_PER_SECOND 2.45
 //how many meters does the robot moves in one second (max voltage on both wheels)
 #define METERS_PER_SECOND 0.5
 //the higher this number is the more amortized the sensor readings are
@@ -151,43 +151,43 @@ void Stop()
 void LeftForwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, LEFT_MOTOR_CHANNEL, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_SET);
 }
 
 void LeftStop()
 {
   __HAL_TIM_SET_COMPARE(&htim3, LEFT_MOTOR_CHANNEL, 1000);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_RESET);
 }
 
 void LeftBackwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, LEFT_MOTOR_CHANNEL, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_RESET);
 }
 
 void RightForwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, RIGHT_MOTOR_CHANNEL, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_SET);
 }
 
 void RightStop()
 {
   __HAL_TIM_SET_COMPARE(&htim3, RIGHT_MOTOR_CHANNEL, 1000);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
 }
 
 void RightBackwards(uint32_t duty_cycle)
 {
   __HAL_TIM_SET_COMPARE(&htim3, RIGHT_MOTOR_CHANNEL, duty_cycle);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_3_GPIO_Port, H_BRIDGE_IN_4_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(H_BRIDGE_IN_4_GPIO_Port, H_BRIDGE_IN_3_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_1_GPIO_Port, H_BRIDGE_IN_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(H_BRIDGE_IN_2_GPIO_Port, H_BRIDGE_IN_2_Pin, GPIO_PIN_RESET);
 }
 
 uint32_t waitMs = 0;

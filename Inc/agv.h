@@ -80,10 +80,12 @@ void SignalError();
 void TurnLeft(uint32_t);
 void TurnRight(uint32_t);
 
-void LeftFowrwards(uint32_t);
+void LeftForwards(uint32_t);
 void LeftBackwards(uint32_t);
+void LeftStop();
 
-void RightFowrwards(uint32_t);
+void RightForwards(uint32_t);
 void RightBackwards(uint32_t);
+void RightStop();
 
 #endif

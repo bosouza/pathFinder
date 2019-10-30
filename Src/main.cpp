@@ -13,12 +13,8 @@ int main(void)
 {
   worldGraph graph(5, initial, target, initialOrientation);
 
-  TurnLeft(1000);
-  while (1)
-    ;
-
   InitAVG();
-  TurnAngle(20);
+  TurnAngle(6.28);
   FollowLine(0.1);
 
   direction path;
