@@ -14,9 +14,9 @@
 //the higher this number is the more amortized the sensor readings are
 #define SENSOR_MEAN_NUM 10
 //threshold for the left if-sensor (compared to the 12-bit adc output)
-#define LEFT_THRESHOLD 2150
+#define LEFT_THRESHOLD 900
 //threshold for the right if-sensor (compared to the 12-bit adc output)
-#define RIGHT_THRESHOLD 2150
+#define RIGHT_THRESHOLD 600
 #define DEFAULT_PWM 800
 #define LEFT_MOTOR_CHANNEL TIM_CHANNEL_1
 #define RIGHT_MOTOR_CHANNEL TIM_CHANNEL_2
@@ -73,6 +73,23 @@ void TurnAngle(float radians)
   else
     TurnRight(DEFAULT_PWM);
   BusyWait(1000 * radians / RADIANS_PER_SECOND);
+  Stop();
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_RESET);
+}
+
+void TurnLeftFor(float time)
+{
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_SET);
+  TurnLeft(DEFAULT_PWM);
+  BusyWait(time);
+  Stop();
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_RESET);
+}
+void TurnRightFor(float time)
+{
+  HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_SET);
+  TurnRight(DEFAULT_PWM);
+  BusyWait(time);
   Stop();
   HAL_GPIO_WritePin(TURNING_GPIO_Port, TURNING_Pin, GPIO_PIN_RESET);
 }

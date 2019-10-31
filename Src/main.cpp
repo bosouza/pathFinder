@@ -4,37 +4,32 @@
 #include <worldGraph.h>
 
 using namespace std;
-const pair<int, int> target(0, 1);
-const pair<int, int> initial(3, 4);
-const orientationTypedef initialOrientation = EAST;
-const float allignDistance = 0.1;
+const pair<int, int> target(5, 3);
+const pair<int, int> initial(1, 5);
+const orientationTypedef initialOrientation = SOUTH;
+const float allignDistance = 0.2;
 
 int main(void)
 {
-  worldGraph graph(5, initial, target, initialOrientation);
+  worldGraph graph(6, initial, target, initialOrientation);
 
   InitAVG();
-  TurnAngle(6.28);
-  FollowLine(0.1);
 
   direction path;
   while ((path = graph.getDirection()) != NO_PATH)
   {
-    float turn;
     switch (path)
     {
     case LEFT:
-      turn = 3.1415 / 2;
+      TurnLeftFor(800);
       break;
     case RIGHT:
-      turn = -3.1415 / 2;
+      TurnRightFor(800);
       break;
     case BACKWARD:
-      turn = 3.1415;
+      TurnRightFor(1400);
       break;
     }
-    if (path != FORWARD)
-      TurnAngle(turn);
     if (FollowLine(allignDistance) == AGV_OK)
       graph.instructionCompleted();
     else

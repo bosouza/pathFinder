@@ -75,6 +75,8 @@ AVG_StatusTypedef FollowLine(float alignDistance);
 //hardForward will attempt to advance the specified distance. If the path is block it'll wait until
 //it's unblocked to be able to clear the specified distance
 void HardForward(float distance);
+void TurnLeftFor(float time);
+void TurnRightFor(float time);
 void SignalError();
 
 void TurnLeft(uint32_t);
