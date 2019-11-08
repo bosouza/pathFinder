@@ -20,6 +20,9 @@
 #define DEFAULT_PWM 800
 #define LEFT_MOTOR_CHANNEL TIM_CHANNEL_1
 #define RIGHT_MOTOR_CHANNEL TIM_CHANNEL_2
+#define ECHO_CHANNEL_1 TIM_CHANNEL_1
+#define ECHO_CHANNEL_2 TIM_CHANNEL_2
+#define TRIGGER_CHANNEL TIM_CHANNEL_1
 
 void TurnAngle(float radians);
 AVG_StatusTypedef TurnAngleGrab(float radians, float searchAngle);
@@ -39,6 +42,7 @@ void RightBackwards(uint32_t duty_cycle);
 void RightStop();
 
 uint16_t ADC_Data[2] = {0};
+uint32_t echo_period;
 
 void InitAVG(void)
 {
@@ -49,12 +53,17 @@ void InitAVG(void)
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
+  MX_TIM1_Init();
   MX_TIM11_Init();
+  MX_TIM4_Init();
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Data, 2);
 
   HAL_TIM_PWM_Start(&htim3, LEFT_MOTOR_CHANNEL);
   HAL_TIM_PWM_Start(&htim3, RIGHT_MOTOR_CHANNEL);
+  HAL_TIM_PWM_Start(&htim4, TRIGGER_CHANNEL);
+  HAL_TIM_PWM_Start_DMA(&htim11, ECHO_CHANNEL_2, &echo_period, 1);
+  HAL_TIM_PWM_Start(&htim11, ECHO_CHANNEL_1);
   Stop();
   HAL_TIM_Base_Start(&htim3);
 
@@ -208,6 +217,7 @@ void RightBackwards(uint32_t duty_cycle)
 }
 
 uint32_t waitMs = 0;
+
 void BusyWait(uint32_t ms)
 {
   waitMs = ms;
