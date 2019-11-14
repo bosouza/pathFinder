@@ -61,6 +61,7 @@ void InitAVG(void)
 
   HAL_TIM_PWM_Start(&htim3, LEFT_MOTOR_CHANNEL);
   HAL_TIM_PWM_Start(&htim3, RIGHT_MOTOR_CHANNEL);
+  HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_PWM_Start(&htim4, TRIGGER_CHANNEL);
   HAL_TIM_PWM_Start_DMA(&htim11, ECHO_CHANNEL_2, &echo_period, 1);
   HAL_TIM_PWM_Start(&htim11, ECHO_CHANNEL_1);
@@ -226,6 +227,7 @@ void BusyWait(uint32_t ms)
     ;
 }
 
+int cycles = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM11)
@@ -235,6 +237,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
       HAL_TIM_Base_Start_IT(&htim11);
     }
+  }
+  else if (htim->Instance == TIM4)
+  {
+    cycles++;
   }
 }
 
