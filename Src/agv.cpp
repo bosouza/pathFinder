@@ -42,7 +42,7 @@ void RightBackwards(uint32_t duty_cycle);
 void RightStop();
 
 uint16_t ADC_Data[2] = {0};
-uint32_t echo_period;
+uint32_t echo_width;
 
 void InitAVG(void)
 {
@@ -61,10 +61,9 @@ void InitAVG(void)
 
   HAL_TIM_PWM_Start(&htim3, LEFT_MOTOR_CHANNEL);
   HAL_TIM_PWM_Start(&htim3, RIGHT_MOTOR_CHANNEL);
-  HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_PWM_Start(&htim4, TRIGGER_CHANNEL);
-  HAL_TIM_PWM_Start_DMA(&htim11, ECHO_CHANNEL_2, &echo_period, 1);
-  HAL_TIM_PWM_Start(&htim11, ECHO_CHANNEL_1);
+  HAL_TIM_IC_Start_DMA(&htim1, ECHO_CHANNEL_2, &echo_width, 1);
+  HAL_TIM_IC_Start(&htim1, ECHO_CHANNEL_1);
   Stop();
   HAL_TIM_Base_Start(&htim3);
 
@@ -237,10 +236,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     {
       HAL_TIM_Base_Start_IT(&htim11);
     }
-  }
-  else if (htim->Instance == TIM4)
-  {
-    cycles++;
   }
 }
 
