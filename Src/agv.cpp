@@ -17,6 +17,8 @@
 #define LEFT_THRESHOLD 900
 //threshold for the right if-sensor (compared to the 12-bit adc output)
 #define RIGHT_THRESHOLD 600
+// distance for detecting an obstacle (in centimeters)
+#define COLISION_THRESHOLD_CM 10
 #define DEFAULT_PWM 800
 #define LEFT_MOTOR_CHANNEL TIM_CHANNEL_1
 #define RIGHT_MOTOR_CHANNEL TIM_CHANNEL_2
@@ -66,6 +68,7 @@ void InitAVG(void)
   HAL_TIM_IC_Start(&htim1, ECHO_CHANNEL_1);
   Stop();
   HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_Base_Start(&htim11);
 
   HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_RESET);
@@ -115,6 +118,13 @@ AVG_StatusTypedef FollowLine(float allignDistance)
   }
   while (leftSensor < LEFT_THRESHOLD || rightSensor < RIGHT_THRESHOLD)
   {
+    float distancecm = (float)echo_width / 58.0f;
+    if (distancecm < COLISION_THRESHOLD_CM)
+    {
+      HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(LINE_RIGHT_DETECTED_GPIO_Port, LINE_RIGHT_DETECTED_Pin, GPIO_PIN_RESET);
+      return AGV_ERROR;
+    }
     if (leftSensor >= LEFT_THRESHOLD)
     {
       HAL_GPIO_WritePin(LINE_LEFT_DETECTED_GPIO_Port, LINE_LEFT_DETECTED_Pin, GPIO_PIN_SET);

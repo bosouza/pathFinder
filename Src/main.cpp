@@ -34,7 +34,7 @@ int main(void)
       graph.instructionCompleted();
     else
     {
-      TurnAngle(3.1415);
+      TurnRightFor(1400);
       if (FollowLine(allignDistance) == AGV_ERROR)
         SignalError();
       graph.instructionFailed();
