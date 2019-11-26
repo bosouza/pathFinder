@@ -4,7 +4,7 @@ using namespace std;
 
 int mod(int a, int b) { return (a % b + b) % b; }
 
-/*the world is represented as a graph of size graphSize. Bellow an example of size 4 world graph:
+/* the world is represented as a graph of size graphSize. Bellow an example of size 4 world graph:
 O O O O
   | |
 O-O-O-O
